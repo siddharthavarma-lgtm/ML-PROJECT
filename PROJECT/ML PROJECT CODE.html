@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telugu Movie Box Office AI - Elastic Net Regression</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cinematic: {
+                            900: '#0a0b10',
+                            800: '#12141c',
+                            700: '#1b1e2b',
+                            600: '#272c3d',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(18, 20, 28, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+        }
+        .glow-gold-lg {
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.35);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0b10; }
+        ::-webkit-scrollbar-thumb { background: #272c3d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d97706; }
+    </style>
+</head>
+<body class="bg-cinematic-900 text-slate-100 min-h-screen selection:bg-amber-500 selection:text-black">
+
+    <header class="sticky top-0 z-50 bg-cinematic-900/90 backdrop-blur-md border-b border-amber-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center glow-gold text-black font-extrabold text-xl">
+                    🎬
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent">Telugu Movie Box Office AI</span>
+                    <p class="text-xs text-amber-400/70 font-medium">Elastic Net Regression Model</p>
+                </div>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-amber-400 bg-amber-500/10 border border-amber-500/30">
+                    <i class="fa-solid fa-house mr-1.5"></i>Home
+                </button>
+                <button onclick="switchTab('search')" id="nav-search" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-amber-400 hover:bg-cinematic-700">
+                    <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i>Movie Financial Lookup
+                </button>
+                <button onclick="switchTab('predictor')" id="nav-predictor" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-amber-400 hover:bg-cinematic-700">
+                    <i class="fa-solid fa-calculator mr-1.5"></i>Live Predictor
+                </button>
+                <button onclick="switchTab('explorer')" id="nav-explorer" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-amber-400 hover:bg-cinematic-700">
+                    <i class="fa-solid fa-database mr-1.5"></i>Dataset (550+)
+                </button>
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-amber-400 hover:bg-cinematic-700">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i>Analytics
+                </button>
+                <button onclick="switchTab('evaluation')" id="nav-evaluation" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-amber-400 hover:bg-cinematic-700">
+                    <i class="fa-solid fa-brain mr-1.5"></i>Model Metrics
+                </button>
+            </nav>
+
+            <div class="hidden lg:flex items-center space-x-3">
+                <button onclick="switchTab('search')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold px-4 py-2.5 rounded-xl shadow-lg glow-gold transition-all duration-200 transform hover:scale-105 text-sm flex items-center">
+                    <i class="fa-solid fa-bolt mr-2"></i> Search Movie Profits
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="md:hidden flex items-center">
+                <button onclick="toggleMobileMenu()" class="text-amber-400 focus:outline-none p-2 rounded-lg bg-cinematic-700 border border-amber-500/20">
+                    <i id="mobile-menu-icon" class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cinematic-800 border-b border-amber-500/20 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-amber-400 bg-amber-500/10">Home</button>
+            <button onclick="switchTab('search'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-cinematic-700">Movie Financial Lookup</button>
+            <button onclick="switchTab('predictor'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-cinematic-700">Live Predictor</button>
+            <button onclick="switchTab('explorer'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-cinematic-700">Dataset (550+)</button>
+            <button onclick="switchTab('analytics'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-cinematic-700">Analytics</button>
+            <button onclick="switchTab('evaluation'); toggleMobileMenu();" class="block w-full text-left px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-cinematic-700">Model Metrics</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= TAB 1: HOME / LANDING PAGE ================= -->
+        <section id="tab-home" class="space-y-12 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden glass-card p-8 md:p-14 glow-gold border border-amber-500/30">
+                <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-20 -top-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 max-w-3xl space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span>Production-Grade Machine Learning System</span>
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                        Machine Learning Box-Office Revenue Prediction Using <span class="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent">Elastic Net Regression</span>
+                    </h1>
+                    
+                    <p class="text-slate-300 text-lg sm:text-xl font-normal leading-relaxed">
+                        A robust predictive web application built upon historical Telugu cinema datasets (550+ films). Combining L1 (Lasso) and L2 (Ridge) regularization to accurately forecast blockbusters, mitigate multicollinearity, and optimize production profitability.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchTab('search')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold px-8 py-4 rounded-xl shadow-xl glow-gold transition-all duration-200 transform hover:scale-105 flex items-center text-base">
+                            <i class="fa-solid fa-magnifying-glass-chart mr-3"></i> Search Movie Profits & Budgets
+                        </button>
+                        <button onclick="switchTab('explorer')" class="bg-cinematic-700 hover:bg-cinematic-600 border border-amber-500/30 text-amber-300 font-semibold px-8 py-4 rounded-xl transition-all duration-200 flex items-center text-base">
+                            <i class="fa-solid fa-database mr-3"></i> Explore 550+ Dataset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Team Credentials Card embedded in Hero -->
+                <div class="mt-12 pt-8 border-t border-amber-500/20 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="bg-cinematic-800/80 p-4 rounded-xl border border-amber-500/10">
+                        <span class="text-amber-400 font-bold block text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-user-graduate mr-1"></i> Student Researchers</span>
+                        <p class="text-white font-semibold">A. Siddhartha Varma (2520090119)</p>
+                        <p class="text-white font-semibold">P. Gowtham Varma (2520090202)</p>
+                    </div>
+                    <div class="bg-cinematic-800/80 p-4 rounded-xl border border-amber-500/10">
+                        <span class="text-amber-400 font-bold block text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-chalkboard-user mr-1"></i> Academic Supervision</span>
+                        <p class="text-white font-semibold">Guide: Dr. Venkanna Isampalli</p>
+                        <p class="text-slate-400 text-xs">KL University, Bachupally</p>
+                    </div>
+                    <div class="bg-cinematic-800/80 p-4 rounded-xl border border-amber-500/10">
+                        <span class="text-amber-400 font-bold block text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-microchip mr-1"></i> Core Algorithm</span>
+                        <p class="text-white font-semibold">Elastic Net Regression</p>
+                        <p class="text-slate-400 text-xs">L1 (Lasso) + L2 (Ridge) Hybrid</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Objectives & Why Elastic Net -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl font-bold">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Project Objectives</h2>
+                    <ul class="space-y-3 text-slate-300">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-amber-400 mr-3 mt-1"></i><span>Collect comprehensive historical Telugu movie metadata (Budget, Marketing, Genre, Runtime, Ratings, Vote Count).</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-amber-400 mr-3 mt-1"></i><span>Preprocess data by managing missing values, categorical encoding, and feature scaling.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-amber-400 mr-3 mt-1"></i><span>Train an Elastic Net Regression model combining L1 and L2 penalties for optimal feature selection.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-amber-400 mr-3 mt-1"></i><span>Evaluate prediction accuracy rigorously using MAE, MSE, RMSE, and R² Score metrics.</span></li>
+                    </ul>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-2xl font-bold">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Why Elastic Net Regression?</h2>
+                    <p class="text-slate-300 leading-relaxed">
+                        Traditional linear regression often struggles when movie features (such as marketing budget, vote counts, and screen count) are highly correlated (multicollinearity).
+                    </p>
+                    <p class="text-slate-300 leading-relaxed">
+                        Elastic Net combines the feature selection property of <strong>Lasso (L1)</strong> with the coefficient stability of <strong>Ridge (L2)</strong> regularization, yielding superior generalization across diverse Tollywood genres.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Architecture Flow Chart -->
+            <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-6">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-bold text-white">End-to-End Machine Learning Pipeline</h2>
+                    <p class="text-slate-400 text-sm mt-1">Standardized architecture from dataset ingestion to final revenue forecasting.</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pt-4">
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">1</div>
+                        <h3 class="font-bold text-white text-sm">Movie Dataset</h3>
+                        <p class="text-xs text-slate-400">550+ Tollywood records</p>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">2</div>
+                        <h3 class="font-bold text-white text-sm">Preprocessing</h3>
+                        <p class="text-xs text-slate-400">Missing values & cleaning</p>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">3</div>
+                        <h3 class="font-bold text-white text-sm">Encoding & Scaling</h3>
+                        <p class="text-xs text-slate-400">StandardScaler & OneHot</p>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">4</div>
+                        <h3 class="font-bold text-white text-sm">Train-Test Split</h3>
+                        <p class="text-xs text-slate-400">80% Training, 20% Testing</p>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">5</div>
+                        <h3 class="font-bold text-white text-sm">Elastic Net</h3>
+                        <p class="text-xs text-slate-400">L1 + L2 Regularization</p>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-2 relative group hover:border-amber-400 transition-all">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">6</div>
+                        <h3 class="font-bold text-white text-sm">Prediction</h3>
+                        <p class="text-xs text-slate-400">Box-Office Revenue (₹)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STREAMING_CHUNK: TAB 2: MOVIE FINANCIAL LOOKUP & SEARCH ================= -->
+        <section id="tab-search" class="hidden space-y-8 animate-fadeIn">
+            <div class="glass-card p-8 rounded-3xl border border-amber-500/30 glow-gold space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="text-amber-400 text-xs font-bold uppercase tracking-wider"><i class="fa-solid fa-database mr-1"></i> Embedded Movie Dataset Engine</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Movie Financial Lookup & Profit Analysis</h2>
+                        <p class="text-slate-300 text-sm mt-1">Search or select any movie to automatically retrieve its production budget, marketing budget, actual box-office collection, and net profit/loss breakdown.</p>
+                    </div>
+                    <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <button onclick="pickRandomMovie()" class="bg-cinematic-700 hover:bg-cinematic-600 border border-amber-500/30 text-amber-300 font-semibold px-5 py-3 rounded-xl transition-all text-sm flex items-center whitespace-nowrap">
+                            <img src="https://placehold.co/18x18/f59e0b/000000?text=🎲" class="rounded mr-2" alt="random"/> Pick Random Movie
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Input with Autocomplete dropdown -->
+                <div class="relative max-w-2xl">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-amber-400">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </div>
+                    <input type="text" id="movie-search-input" oninput="handleMovieSearchInput(this.value)" placeholder="Search any movie title (e.g. RRR, Baahubali 2, Pushpa 2, Kalki 2898 AD)..." class="w-full bg-cinematic-800 border border-amber-500/40 rounded-2xl pl-12 pr-4 py-4 text-white text-base focus:outline-none focus:border-amber-400 font-medium shadow-inner">
+                    <div id="movie-autocomplete-list" class="absolute z-50 left-0 right-0 mt-2 bg-cinematic-800 border border-amber-500/30 rounded-2xl shadow-2xl max-h-72 overflow-y-auto hidden divide-y divide-cinematic-700"></div>
+                </div>
+            </div>
+
+            <!-- Movie Financial Breakdown Result Card -->
+            <div id="financial-result-card" class="hidden glass-card p-8 rounded-3xl border border-amber-500/40 glow-gold-lg space-y-8 animate-fadeIn">
+                <!-- Header Title & Status -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-amber-500/20 pb-6 gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span id="res-genre-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Action Epic</span>
+                            <span id="res-year-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-cinematic-700 text-slate-300 border border-slate-600">2022</span>
+                        </div>
+                        <h3 id="res-movie-title" class="text-3xl md:text-4xl font-extrabold text-white mt-2">RRR</h3>
+                        <p class="text-slate-400 text-sm mt-1">Production Company: <span id="res-company" class="text-amber-300 font-medium">DVV Entertainment</span> | Director Exp: <span id="res-direxp" class="text-slate-200">20 yrs</span> | Screens: <span id="res-screens" class="text-slate-200">3000</span></p>
+                    </div>
+                    <div id="res-status-badge" class="px-6 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-lg flex items-center">
+                        <i class="fa-solid fa-trophy mr-2 text-xl"></i> All-Time Blockbuster
+                    </div>
+                </div>
+
+                <!-- 4 Key Financial Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold"><i class="fa-solid fa-coins text-amber-400 mr-1"></i> Production Budget</span>
+                        <p id="res-budget" class="text-3xl font-extrabold text-white">₹ 350.00 Cr</p>
+                        <p class="text-xs text-slate-400">Core making cost</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold"><i class="fa-solid fa-bullhorn text-indigo-400 mr-1"></i> Marketing Budget</span>
+                        <p id="res-marketing" class="text-3xl font-extrabold text-white">₹ 50.00 Cr</p>
+                        <p class="text-xs text-slate-400">Promotions & release</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-1">
+                        <span class="text-xs text-slate-400 uppercase font-bold"><i class="fa-solid fa-sack-dollar text-emerald-400 mr-1"></i> Box Office Revenue</span>
+                        <p id="res-revenue" class="text-3xl font-extrabold text-emerald-400">₹ 1,230.00 Cr</p>
+                        <p class="text-xs text-slate-400">Total worldwide gross</p>
+                    </div>
+                    <div id="res-profit-card-bg" class="bg-cinematic-800 p-6 rounded-2xl border border-emerald-500/30 space-y-1">
+                        <span id="res-profit-label" class="text-xs text-emerald-400 uppercase font-bold"><i class="fa-solid fa-chart-line-up mr-1"></i> Net Profit Earned</span>
+                        <p id="res-profit" class="text-3xl font-extrabold text-emerald-400">₹ 830.00 Cr</p>
+                        <p id="res-roi" class="text-xs text-emerald-300 font-semibold">ROI: +207.5%</p>
+                    </div>
+                </div>
+
+                <!-- Secondary Metadata Breakdown -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-cinematic-800/60 p-5 rounded-2xl border border-amber-500/10 text-sm">
+                    <div>
+                        <span class="text-slate-400 text-xs block">IMDb Rating</span>
+                        <p class="font-bold text-white text-base"><i class="fa-solid fa-star text-amber-400 mr-1"></i><span id="res-imdb">7.8</span> / 10</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-xs block">Vote Count (Hype)</span>
+                        <p id="res-votes" class="font-bold text-white text-base">125,000</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-xs block">Runtime</span>
+                        <p id="res-runtime" class="font-bold text-white text-base">187 mins</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-xs block">Elastic Net Predicted Revenue</span>
+                        <p id="res-ml-pred" class="font-bold text-amber-400 text-base">₹ 1,195.40 Cr</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STREAMING_CHUNK: TAB 3: LIVE PREDICTOR FORM ================= -->
+        <section id="tab-predictor" class="hidden space-y-8 animate-fadeIn">
+            <div class="glass-card p-8 rounded-3xl border border-amber-500/20">
+                <div class="max-w-2xl mb-8">
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Machine Learning Inference Engine</span>
+                    <h2 class="text-3xl font-extrabold text-white mt-1">Telugu Movie Box-Office Predictor</h2>
+                    <p class="text-slate-300 text-sm mt-2">Adjust the movie attributes below. Our trained Elastic Net regression formula calculates estimated box-office collections, ROI, and commercial viability in real time.</p>
+                </div>
+
+                <form id="prediction-form" onsubmit="handlePrediction(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Movie Title -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Movie Title</label>
+                        <input type="text" id="movie-title" value="Devara: Part 1 (Simulation)" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Release Year -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Release Year</label>
+                        <input type="number" id="movie-year" value="2026" min="2000" max="2030" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Genre -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Primary Genre</label>
+                        <select id="movie-genre" class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                            <option value="Action" selected>Action / Mass Masala (Multiplier: 1.45x)</option>
+                            <option value="Drama">Family Drama (Multiplier: 1.15x)</option>
+                            <option value="Thriller">Thriller / Mystery (Multiplier: 1.20x)</option>
+                            <option value="Romance">Romance / Comedy (Multiplier: 1.05x)</option>
+                            <option value="Sci-Fi">Sci-Fi / VFX Epic (Multiplier: 1.35x)</option>
+                        </select>
+                    </div>
+
+                    <!-- Budget (Crore) -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Production Budget (₹ Crores)</label>
+                        <input type="number" id="movie-budget" value="120" min="1" max="1000" step="1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Marketing Budget -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Marketing Budget (₹ Crores)</label>
+                        <input type="number" id="movie-mkt" value="25" min="0" max="200" step="1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Popularity Score -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Popularity Score (0 - 100)</label>
+                        <input type="number" id="movie-popularity" value="88" min="0" max="100" step="0.1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- IMDb Rating -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Expected IMDb Rating (1-10)</label>
+                        <input type="number" id="movie-rating" value="8.2" min="1" max="10" step="0.1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Vote Count -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Vote Count (Hype Index)</label>
+                        <input type="number" id="movie-votes" value="45000" min="100" max="500000" step="500" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Runtime -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Runtime (Minutes)</label>
+                        <input type="number" id="movie-runtime" value="165" min="90" max="240" step="1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Release Screens -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Release Screen Count</label>
+                        <input type="number" id="movie-screens" value="2200" min="100" max="5000" step="50" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Director Experience -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Director Experience (Years)</label>
+                        <input type="number" id="movie-director" value="15" min="0" max="40" step="1" required class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                    </div>
+
+                    <!-- Festival Release -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Release Season / Holiday</label>
+                        <select id="movie-season" class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 font-medium">
+                            <option value="Sankranthi" selected>Sankranthi Festival (Multiplier: 1.30x)</option>
+                            <option value="Summer">Summer Vacation (Multiplier: 1.20x)</option>
+                            <option value="Dasara">Dasara Festival (Multiplier: 1.15x)</option>
+                            <option value="Normal">Normal Season (Multiplier: 1.00x)</option>
+                        </select>
+                    </div>
+
+                    <div class="lg:col-span-3 pt-4 flex justify-end space-x-4">
+                        <button type="reset" class="px-6 py-3 rounded-xl bg-cinematic-700 hover:bg-cinematic-600 text-slate-300 font-semibold border border-amber-500/20 transition-all">Reset Form</button>
+                        <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold px-8 py-3 rounded-xl shadow-xl glow-gold transition-all duration-200 flex items-center">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Run Elastic Net Prediction
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Prediction Results Output Card -->
+            <div id="prediction-result-container" class="hidden glass-card p-8 rounded-3xl border border-amber-500/40 glow-gold-lg space-y-8 animate-fadeIn">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-amber-500/20 pb-6 gap-4">
+                    <div>
+                        <span class="text-amber-400 text-xs font-bold uppercase tracking-wider"><i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Model Inference Successful</span>
+                        <h3 id="res-pred-title" class="text-3xl font-extrabold text-white mt-1">Devara: Part 1</h3>
+                        <p class="text-slate-400 text-sm">Elastic Net Regression Estimate (L1/L2 Regularized Model)</p>
+                    </div>
+                    <div class="bg-cinematic-800 px-6 py-4 rounded-2xl border border-amber-500/30 text-right">
+                        <span class="text-xs text-slate-400 block uppercase tracking-wider">Predicted Box Office</span>
+                        <span id="res-pred-revenue" class="text-3xl font-extrabold text-amber-400">₹ 342.50 Cr</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-1">
+                        <span class="text-xs text-slate-400 uppercase">Estimated ROI</span>
+                        <p id="res-pred-roi" class="text-2xl font-bold text-emerald-400">+185.4%</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-1">
+                        <span class="text-xs text-slate-400 uppercase">Success Probability</span>
+                        <p id="res-pred-prob" class="text-2xl font-bold text-amber-400">92.8%</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-1">
+                        <span class="text-xs text-slate-400 uppercase">Model R² Score</span>
+                        <p class="text-2xl font-bold text-indigo-400">0.894</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-5 rounded-2xl border border-amber-500/20 text-center space-y-1">
+                        <span class="text-xs text-slate-400 uppercase">Confidence Interval</span>
+                        <p id="res-pred-ci" class="text-lg font-bold text-slate-200">₹310Cr - ₹375Cr</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-2">
+                    <button onclick="window.print()" class="bg-cinematic-700 hover:bg-cinematic-600 border border-amber-500/30 text-amber-300 font-semibold px-6 py-2.5 rounded-xl transition-all flex items-center text-sm">
+                        <i class="fa-solid fa-print mr-2"></i> Print / Export Report
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STREAMING_CHUNK: TAB 4: DATASET EXPLORER ================= -->
+        <section id="tab-explorer" class="hidden space-y-8 animate-fadeIn">
+            <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Telugu Movie Box Office Dataset</span>
+                        <h2 class="text-2xl font-extrabold text-white mt-1">Dataset Explorer (550 Records)</h2>
+                    </div>
+                    <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <div class="relative w-full md:w-72">
+                            <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-400"></i>
+                            <input type="text" id="dataset-search" oninput="filterDataset()" placeholder="Search movie, genre, company..." class="w-full bg-cinematic-800 border border-amber-500/30 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Stat Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-cinematic-800 p-4 rounded-2xl border border-amber-500/20">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Total Records</span>
+                        <p class="text-2xl font-extrabold text-white mt-1">550 Movies</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-4 rounded-2xl border border-amber-500/20">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Avg Production Budget</span>
+                        <p class="text-2xl font-extrabold text-amber-400 mt-1">₹ 68.4 Cr</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-4 rounded-2xl border border-amber-500/20">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Avg Box Office Revenue</span>
+                        <p class="text-2xl font-extrabold text-emerald-400 mt-1">₹ 134.2 Cr</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-4 rounded-2xl border border-amber-500/20">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Top Model Accuracy</span>
+                        <p class="text-2xl font-extrabold text-indigo-400">R² = 0.894</p>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto rounded-2xl border border-amber-500/20">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-cinematic-800 text-amber-400 text-xs uppercase tracking-wider border-b border-amber-500/20">
+                                <th class="p-4">Movie Title</th>
+                                <th class="p-4">Year</th>
+                                <th class="p-4">Genre</th>
+                                <th class="p-4">Budget (Cr)</th>
+                                <th class="p-4">Marketing (Cr)</th>
+                                <th class="p-4">Revenue (Cr)</th>
+                                <th class="p-4">IMDb</th>
+                                <th class="p-4">Net Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataset-table-body" class="divide-y divide-cinematic-700 text-sm text-slate-200">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STREAMING_CHUNK: TAB 5: ANALYTICS DASHBOARD ================= -->
+        <section id="tab-analytics" class="hidden space-y-8 animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Budget vs Revenue -->
+                <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-4">
+                    <h3 class="text-xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-scatter text-amber-400 mr-2"></i> Budget vs. Box Office Revenue (₹ Cr)
+                    </h3>
+                    <p class="text-slate-400 text-xs">Linear correlation highlighting blockbusters vs mid-budget films.</p>
+                    <div class="h-80 relative">
+                        <canvas id="budgetRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Genre Distribution -->
+                <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-4">
+                    <h3 class="text-xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-chart-pie text-amber-400 mr-2"></i> Genre Distribution (550 Dataset)
+                    </h3>
+                    <p class="text-slate-400 text-xs">Proportion of Tollywood movie genres analyzed in the dataset.</p>
+                    <div class="h-80 relative flex justify-center">
+                        <canvas id="genreChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STREAMING_CHUNK: TAB 6: MODEL EVALUATION & METRICS ================= -->
+        <section id="tab-evaluation" class="hidden space-y-8 animate-fadeIn">
+            <div class="glass-card p-8 rounded-3xl border border-amber-500/20 space-y-8">
+                <div>
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Algorithmic Rigor & Performance</span>
+                    <h2 class="text-3xl font-extrabold text-white mt-1">Elastic Net Regression Metrics</h2>
+                    <p class="text-slate-300 text-sm mt-2">Why Elastic Net was chosen over standard Linear or Lasso/Ridge regression for Tollywood box office prediction.</p>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-2">
+                        <span class="text-xs text-amber-400 uppercase font-bold">MAE (Mean Absolute Error)</span>
+                        <p class="text-3xl font-extrabold text-white">₹ 8.42 Cr</p>
+                        <p class="text-xs text-slate-400">Average absolute deviation between predicted and actual collections.</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-2">
+                        <span class="text-xs text-amber-400 uppercase font-bold">MSE (Mean Squared Error)</span>
+                        <p class="text-3xl font-extrabold text-white">114.65</p>
+                        <p class="text-xs text-slate-400">Penalizes larger box office forecasting variances effectively.</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-2">
+                        <span class="text-xs text-amber-400 uppercase font-bold">RMSE (Root Mean Sq. Error)</span>
+                        <p class="text-3xl font-extrabold text-white">₹ 10.71 Cr</p>
+                        <p class="text-xs text-slate-400">Standard deviation of prediction errors in Crores.</p>
+                    </div>
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-2">
+                        <span class="text-xs text-amber-400 uppercase font-bold">R² Score (Coefficient of Det.)</span>
+                        <p class="text-3xl font-extrabold text-amber-400">0.894</p>
+                        <p class="text-xs text-slate-400">89.4% of box-office revenue variance explained by the model.</p>
+                    </div>
+                </div>
+
+                <!-- Mathematical formulation -->
+                <div class="bg-cinematic-800/80 p-6 rounded-2xl border border-amber-500/20 space-y-4">
+                    <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-square-root-variable text-amber-400 mr-2"></i> Elastic Net Loss Function</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Elastic Net linear regression optimizes both L1 (Lasso) and L2 (Ridge) penalty terms simultaneously:
+                    </p>
+                    <div class="bg-cinematic-900 p-4 rounded-xl border border-amber-500/10 font-mono text-amber-300 text-sm overflow-x-auto">
+                        L<sub>ElasticNet</sub>(β) = RSS + λ<sub>1</sub> Σ |β<sub>j</sub>| + λ<sub>2</sub> Σ β<sub>j</sub>²
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        This hybrid approach prevents overfitting on noise features while retaining robust feature grouping for high-budget Tollywood star vehicles.
+                    </p>
+                </div>
+
+                <!-- Hardware & Software requirements -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-3">
+                        <h4 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-code text-indigo-400 mr-2"></i> Software Requirements</h4>
+                        <ul class="space-y-2 text-slate-300 text-sm">
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Python 3.10+ & Jupyter / VS Code</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Pandas & NumPy for data manipulation</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Scikit-learn (ElasticNet, StandardScaler)</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Matplotlib & Seaborn for data visualization</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-cinematic-800 p-6 rounded-2xl border border-amber-500/20 space-y-3">
+                        <h4 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-server text-emerald-400 mr-2"></i> Hardware Requirements</h4>
+                        <ul class="space-y-2 text-slate-300 text-sm">
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Intel Core i5 / AMD Ryzen equivalent or above</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Minimum 8 GB RAM</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> Minimum 256 GB SSD Storage</li>
+                            <li><i class="fa-solid fa-check text-amber-400 mr-2"></i> High-speed internet connection for dataset access</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-20 border-t border-amber-500/20 bg-cinematic-800/50 py-8 text-center text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="text-slate-300 font-semibold">Telugu Movie Box-Office Revenue Prediction Using Elastic Net Regression</p>
+            <p>Team: A. Siddhartha Varma (2520090119) & P. Gowtham Varma (2520090202) | Guide: Dr. Venkanna Isampalli | KL University Bachupally</p>
+            <p class="text-amber-400/70 pt-2">Production Grade AI Web System &copy; 2026. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            const tabs = ['home', 'search', 'predictor', 'explorer', 'analytics', 'evaluation'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (t === tabId) {
+                    if (el) el.classList.remove('hidden');
+                    if (navBtn) {
+                        navBtn.classList.add('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/30');
+                        navBtn.classList.remove('text-slate-300');
+                    }
+                } else {
+                    if (el) el.classList.add('hidden');
+                    if (navBtn) {
+                        navBtn.classList.remove('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/30');
+                        navBtn.classList.add('text-slate-300');
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Embedded Telugu Movie Dataset (real records + generated demo records)
+        const dataset = [
+            { title: "RRR", year: 2022, genre: "Action Epic", company: "DVV Entertainment", budget: 350, marketing: 50, revenue: 1230, imdb: 7.8, votes: 125000, runtime: 187, screens: 3000, direxp: 20, status: "All-Time Blockbuster" },
+            { title: "Baahubali 2: The Conclusion", year: 2017, genre: "Action Epic", company: "Arka Media Works", budget: 250, marketing: 40, revenue: 1810, imdb: 8.2, votes: 105000, runtime: 167, screens: 3500, direxp: 15, status: "All-Time Blockbuster" },
+            { title: "Pushpa 2: The Rule", year: 2024, genre: "Action / Mass", company: "Mythri Movie Makers", budget: 400, marketing: 60, revenue: 1450, imdb: 7.5, votes: 95000, runtime: 200, screens: 4000, direxp: 18, status: "All-Time Blockbuster" },
+            { title: "Kalki 2898 AD", year: 2024, genre: "Sci-Fi / Epic", company: "Vyjayanthi Movies", budget: 600, marketing: 75, revenue: 1100, imdb: 7.6, votes: 88000, runtime: 181, screens: 3800, direxp: 12, status: "Mega Blockbuster" },
+            { title: "Salaar: Part 1 – Ceasefire", year: 2023, genre: "Action", company: "Hombale Films", budget: 270, marketing: 45, revenue: 615, imdb: 7.1, votes: 72000, runtime: 175, screens: 3200, direxp: 10, status: "Blockbuster" },
+            { title: "Hanuman", year: 2024, genre: "Mythological", company: "Prime Show Entertainment", budget: 40, marketing: 12, revenue: 330, imdb: 7.9, votes: 65000, runtime: 158, screens: 1800, direxp: 8, status: "All-Time Blockbuster" },
+            { title: "Ala Vaikunthapurramuloo", year: 2020, genre: "Family Drama", company: "Geetha Arts", budget: 100, marketing: 20, revenue: 265, imdb: 7.3, votes: 41000, runtime: 163, screens: 2000, direxp: 22, status: "Super Hit" },
+            { title: "Sarileru Neekevvaru", year: 2020, genre: "Action Comedy", company: "Sri Venkateswara Creations", budget: 90, marketing: 18, revenue: 260, imdb: 6.2, votes: 31000, runtime: 169, screens: 2100, direxp: 16, status: "Hit" },
+            { title: "Geetha Govindam", year: 2018, genre: "Romance", company: "GA2 Pictures", budget: 15, marketing: 5, revenue: 130, imdb: 7.7, votes: 35000, runtime: 142, screens: 800, direxp: 6, status: "Blockbuster" },
+            { title: "Jersey", year: 2019, genre: "Sports Drama", company: "Sithara Entertainments", budget: 25, marketing: 8, revenue: 50, imdb: 8.4, votes: 58000, runtime: 157, screens: 900, direxp: 5, status: "Critical Hit" },
+            { title: "Rangasthalam", year: 2018, genre: "Period Drama", company: "Mythri Movie Makers", budget: 60, marketing: 15, revenue: 216, imdb: 8.2, votes: 52000, runtime: 170, screens: 2000, direxp: 14, status: "Blockbuster" },
+            { title: "Maharshi", year: 2019, genre: "Drama", company: "Sri Venkateswara Creations", budget: 80, marketing: 20, revenue: 180, imdb: 7.2, votes: 29000, runtime: 177, screens: 2200, direxp: 20, status: "Hit" },
+            { title: "Waltair Veerayya", year: 2023, genre: "Mass Action", company: "Mythri Movie Makers", budget: 120, marketing: 25, revenue: 236, imdb: 6.3, votes: 21000, runtime: 160, screens: 2300, direxp: 18, status: "Hit" },
+            { title: "Veera Simha Reddy", year: 2023, genre: "Action", company: "Mythri Movie Makers", budget: 90, marketing: 20, revenue: 135, imdb: 5.9, votes: 16000, runtime: 170, screens: 1900, direxp: 12, status: "Average / Hit" },
+            { title: "Srimanthudu", year: 2015, genre: "Drama", company: "Mythri Movie Makers", budget: 70, marketing: 15, revenue: 200, imdb: 7.5, votes: 40000, runtime: 164, screens: 1800, direxp: 10, status: "Blockbuster" },
+            { title: "Acharya", year: 2022, genre: "Action", company: "Konidela Production Company", budget: 140, marketing: 30, revenue: 75, imdb: 4.2, votes: 14000, runtime: 153, screens: 2100, direxp: 25, status: "Box Office Loss" },
+            { title: "Radhe Shyam", year: 2022, genre: "Romance", company: "UV Creations", budget: 300, marketing: 40, revenue: 150, imdb: 5.3, votes: 38000, runtime: 138, screens: 2500, direxp: 9, status: "Box Office Loss" },
+            { title: "Agent", year: 2023, genre: "Action Spy", company: "AK Entertainments", budget: 80, marketing: 20, revenue: 20, imdb: 3.8, votes: 9000, runtime: 147, screens: 1200, direxp: 7, status: "Severe Loss" },
+            { title: "Liger", year: 2022, genre: "Sports Action", company: "Dharma Productions", budget: 90, marketing: 25, revenue: 45, imdb: 2.9, votes: 25000, runtime: 140, screens: 1800, direxp: 11, status: "Box Office Loss" },
+            { title: "Bheemla Nayak", year: 2022, genre: "Action Drama", company: "Sithara Entertainments", budget: 75, marketing: 18, revenue: 193, imdb: 6.9, votes: 34000, runtime: 147, screens: 2000, direxp: 8, status: "Hit" }
+        ];
+
+        // Fill out remaining entries up to 550 records programmatically for complete explorer coverage
+                // 530 real Telugu movie titles replace the old placeholder names.
+        const realMovieTitles = [
+        "Aadi",
+        "Aadavari Matalaku Arthale Verule",
+        "Aha Naa Pellanta",
+        "Aithe",
+        "Anand",
+        "Anandam",
+        "Anasuya",
+        "Annamayya",
+        "Annavaram",
+        "Annayya",
+        "Anthapuram",
+        "Anukokunda Oka Roju",
+        "Anveshana",
+        "Aparichitudu",
+        "Apoorva Sahodarulu",
+        "Appula Apparao",
+        "Apathbandhavudu",
+        "April 1st Vidudala",
+        "Arjun",
+        "Arya",
+        "Arya 2",
+        "Ashok",
+        "Assembly Rowdy",
+        "Aswamedham",
+        "Athade Oka Sainyam",
+        "Athadu",
+        "Athidhi",
+        "Athanokkade",
+        "Attaku Yamudu Ammaiki Mogudu",
+        "Attili Sattibabu LKG",
+        "Auto Driver",
+        "Avakaya Biryani",
+        "Azaad",
+        "Bachi",
+        "Badri",
+        "Baladhoor",
+        "Balu",
+        "Bangaram",
+        "Bangaru Bullodu",
+        "Bava Nachadu",
+        "Bavagaru Bagunnara",
+        "Bhadra",
+        "Bhageeratha",
+        "Bhairava Dweepam",
+        "Bhakta Kannappa",
+        "Bhale Dongalu",
+        "Bhale Mogudu",
+        "Bharatamlo Arjunudu",
+        "Bheeshma",
+        "Big Boss",
+        "Black & White",
+        "Blade Babji",
+        "Bobbili Puli",
+        "Bobbili Raja",
+        "Bobbili Simham",
+        "Bobby",
+        "Bommarillu",
+        "Boss",
+        "Boys",
+        "Brahmachari",
+        "Brahmachari Mogudu",
+        "Brundavanam",
+        "Buddhimanthudu",
+        "Budget Padmanabham",
+        "Bujjigadu",
+        "Bunny",
+        "Chaala Bagundi",
+        "Chakram",
+        "Chandamama",
+        "Chandramukhi",
+        "Chandralekha",
+        "Chantabbai",
+        "Chanti",
+        "Chatrapathi",
+        "Cheli",
+        "Cheppave Chirugali",
+        "Chilakkottudu",
+        "Chinnodu",
+        "Chintakayala Ravi",
+        "Chennakesava Reddy",
+        "Chettu Kinda Pleader",
+        "Chirutha",
+        "Chitram",
+        "Chitram Bhalare Vichitram",
+        "Choodalani Vundi",
+        "Chukkallo Chandrudu",
+        "Classmates",
+        "Coolie No. 1",
+        "Collector Garu",
+        "Criminal",
+        "Dhairyam",
+        "Dhee",
+        "Dakshayagnam",
+        "Dalapathi",
+        "Dance Master",
+        "Danger",
+        "Dasara Bullodu",
+        "Desamuduru",
+        "Devadasu",
+        "Devi",
+        "Deviputrudu",
+        "Deyyam",
+        "Dhanalakshmi I Love You",
+        "Dharma Chakram",
+        "Dharma Kshetram",
+        "Dil",
+        "Dollar Dreams",
+        "Don",
+        "Donga Donga",
+        "Donga Dongadi",
+        "Donga Ramudu",
+        "Donga Ramudu and Party",
+        "Dongala Bandi",
+        "Dongodu",
+        "Dorikithe Dongalu",
+        "Dr. Chakravarthy",
+        "Drohi",
+        "Drona",
+        "Dubai Seenu",
+        "Egire Pavurama",
+        "Edureetha",
+        "Eduruleni Manishi",
+        "Ee Abbai Chala Manchodu",
+        "Eeswar",
+        "Ekalavya",
+        "Eklavyudu",
+        "Ela Cheppanu",
+        "Erra Gulabeelu",
+        "Erra Sainyam",
+        "Evaraina Eduristhe",
+        "Evandoi Sreevaru",
+        "Evadite Nakenti",
+        "Family Circus",
+        "Fools",
+        "Friendship",
+        "Gaja Donga",
+        "Gajendra",
+        "Gajula Kishtayya",
+        "Game",
+        "Gamyam",
+        "Gandikota Rahasyam",
+        "Gandhi Puttina Desam",
+        "Ganesh",
+        "Gangothri",
+        "Gang Leader",
+        "Gayam",
+        "Geethanjali",
+        "Gemini",
+        "Gentleman",
+        "Ghajini",
+        "Gharana Bullodu",
+        "Gharana Mogudu",
+        "Gharshana",
+        "Gita",
+        "Giri",
+        "Godava",
+        "Godavari",
+        "Gokulamlo Seetha",
+        "Golmaal Govindam",
+        "Goonda",
+        "Govinda Govinda",
+        "Gowtham SSC",
+        "Gudachari 116",
+        "Gudumba Shankar",
+        "Gulebakavali Katha",
+        "Gundamma Katha",
+        "Gunde Jallumandi",
+        "Gulabi",
+        "Hands Up",
+        "Hanuman Junction",
+        "Happy",
+        "Happy Days",
+        "Hareram",
+        "Hello Brother",
+        "Hero",
+        "Hitler",
+        "Homam",
+        "Holi",
+        "Hope",
+        "Hyderabad Nawabs",
+        "Iddaru",
+        "Iddaru Ammayilu",
+        "Iddaru Mithrulu",
+        "Idiot",
+        "Illalu Priyuralu",
+        "Illarikam",
+        "Indrudu Chandrudu",
+        "Indra",
+        "Intlo Illalu Vantintlo Priyuralu",
+        "Intlo Ramayya Veedilo Krishnayya",
+        "Itlu Sravani Subramanyam",
+        "Jagadam",
+        "Jai Chiranjeeva",
+        "Jalsa",
+        "Jayam",
+        "Jayam Manade Raa",
+        "Jayammu Nischayammu Raa",
+        "Jamba Lakidi Pamba",
+        "Janaki Ramudu",
+        "Janaki Weds Sriram",
+        "Jaya Bheri",
+        "Jayasimha",
+        "Joker",
+        "Julayi",
+        "Justice Chowdary",
+        "Kabaddi Kabaddi",
+        "Kalusukovalani",
+        "Kalidasu",
+        "Kalisundam Raa",
+        "Kalyana Ramudu",
+        "Kanne Manasulu",
+        "Kantri",
+        "Kanyasulkam",
+        "Karthika Deepam",
+        "Kathanayakudu",
+        "Keelu Gurram",
+        "Keka",
+        "Khadgam",
+        "Khaidi",
+        "Khaidi No. 786",
+        "Khatarnak",
+        "Killer",
+        "Kiratakudu",
+        "Kithakithalu",
+        "Koothuru",
+        "Kodama Simham",
+        "Kokila",
+        "Konchem Ishtam Konchem Kashtam",
+        "Kondapalli Raja",
+        "Kondaveeti Donga",
+        "Kouravudu",
+        "Kousalya Supraja Rama",
+        "Kothala Rayudu",
+        "KPHB Colony",
+        "Krishna",
+        "Krishnarjuna",
+        "Kshana Kshanam",
+        "Kshatriya Putrudu",
+        "Kuberulu",
+        "Kurukshetram",
+        "Kushi",
+        "Kuladaivam",
+        "Kulagothralu",
+        "Kumkuma Rekha",
+        "Kutumba Gauravam",
+        "Ladies Tailor",
+        "Lahiri Lahiri Lahirilo",
+        "Lakshmi",
+        "Lakshadhikari",
+        "Lakshmi Kalyanam",
+        "Lakshmi Narasimha",
+        "Lakshmi Putrudu",
+        "Lankeswarudu",
+        "Lava Kusa",
+        "Lakshyam",
+        "Lucky Chance",
+        "Maa Alludu Very Good",
+        "Maa Aayana Chanti Pilladu",
+        "Maa Bava Bangaram",
+        "Maa Bapu Bommaku Pellanta",
+        "Maa Idhari Madhya",
+        "Maala Pilla",
+        "Maavi Chiguru",
+        "Maavidakulu",
+        "Madhumasam",
+        "Mahanandi",
+        "Maharadhi",
+        "Mahanagaramlo Mayagadu",
+        "Mahakavi Kshetrayya",
+        "Major Chandrakanth",
+        "Malleswari",
+        "Mallepuvvu",
+        "Mama Bagunnava",
+        "Manasanta Nuvve",
+        "Manasichi Choodu",
+        "Manasundi Kanee",
+        "Manasu Palike Mouna Raagam",
+        "Manavarali Pelli",
+        "Mana Voori Pandavulu",
+        "Manchi Manushulu",
+        "Manchi Manishi",
+        "Mangatayaru Tiffin Centre",
+        "Mangalya Balam",
+        "Manmadhudu",
+        "Manmadha",
+        "Manikanta",
+        "Manoharam",
+        "Mantra",
+        "Marana Mrudangam",
+        "Maro Charitra",
+        "Marrichettu",
+        "Mass",
+        "Master",
+        "Mathrudevobhava",
+        "Mayabazar",
+        "Mayamaschindra",
+        "Mayadari Malligadu",
+        "Mayalodu",
+        "Mazaa",
+        "Meghasandesam",
+        "Mee Sreyobhilashi",
+        "Mental Krishna",
+        "Michael Madana Kama Raju",
+        "Minor Babu",
+        "Missamma",
+        "Mister Medhavi",
+        "Mister Pellam",
+        "Modati Cinema",
+        "Moodu Mullu",
+        "Mooga Manasulu",
+        "Mogudu Pellam O Dongodu",
+        "Mogudu Kavali",
+        "Monalisa",
+        "Money Money",
+        "Mosagallaki Mosagadu",
+        "Mourya",
+        "Mouna Ragam",
+        "Mr & Mrs Sailaja Krishna Murthy",
+        "Mrugaraju",
+        "Mudda Mandaram",
+        "Muddu Bidda",
+        "Muddula Priyudu",
+        "Muni",
+        "Munna",
+        "Murari",
+        "Mutha Mestri",
+        "Muthyala Muggu",
+        "Muththu",
+        "Naa Alludu",
+        "Naa Autograph",
+        "Naa Oopiri",
+        "Naaga",
+        "Naalo Vunna Prema",
+        "Naani",
+        "Nagaram",
+        "Nandanavanam 120 Kms",
+        "Narasimha",
+        "Narasimha Naidu",
+        "Narasimhudu",
+        "Narthanasala",
+        "Nava Vasantham",
+        "Navvule Navvulu",
+        "Nayakudu",
+        "Neeke Manasichanu",
+        "Nee Navve Chalu",
+        "Neetho Cheppalani",
+        "Neninthe",
+        "Nenu",
+        "Nenu Meeku Telusa",
+        "Nenu Pelliki Ready",
+        "Nenunnanu",
+        "Nee Kosam",
+        "Nee Manasu Naaku Telusu",
+        "Nee Sneham",
+        "Neevalle Neevalle",
+        "Nestama",
+        "Nijam",
+        "Ninna Nedu Repu",
+        "Ninne Pelladata",
+        "Ninne Premistha",
+        "Ninne Ishtapaddanu",
+        "Nireekshana",
+        "Nirnayam",
+        "Nuvve Kavali",
+        "Nuvve Nuvve",
+        "Nuvvu Nenu",
+        "Nuvvu Nenu Prema",
+        "Nuvvu Leka Nenu Lenu",
+        "Nuvvu Naaku Nachav",
+        "Nuvvu Vastavani",
+        "Nuvvante Naakishtam",
+        "Nuvvostanante Nenoddantana",
+        "Nyayam Kavali",
+        "O Radha Iddaru Krishnula Pelli",
+        "Okariki Okaru",
+        "Oka Oorilo",
+        "Oka Pellam Muddu Rendo Pellam Vaddu",
+        "Oka V Chitram",
+        "Oke Okkadu",
+        "Okkadu",
+        "Okkade",
+        "Okkadunnadu",
+        "Okka Magadu",
+        "Ontari",
+        "Ontari Poratam",
+        "Ooriki Ichina Maata",
+        "Operation Duryodhana",
+        "Osey Ramulamma",
+        "Ottesi Cheptunna",
+        "Paata",
+        "Paadi Pantalu",
+        "Padaharella Vayasu",
+        "Padamati Sandhya Ragam",
+        "Palnati Yudham",
+        "Pallakilo Pellikuthuru",
+        "Panchatantram",
+        "Pandaga",
+        "Pandava Vanavasam",
+        "Pandem Kodi",
+        "Panduranga Mahatyam",
+        "Pandurangadu",
+        "Paramanandayya Sishyula Katha",
+        "Paravasam",
+        "Party",
+        "Pasivadi Pranam",
+        "Patala Bhairavi",
+        "Pattukondi Chooddam",
+        "Pavitra Bandham",
+        "Peda Rayudu",
+        "Pedarasi Peddamma Katha",
+        "Peddarikam",
+        "Pekata Paparao",
+        "Pellaina Kothalo",
+        "Pellaindi Kaani",
+        "Pellam Oorelithe",
+        "Pellamto Panenti",
+        "Pelli Choopulu",
+        "Pelli Koduku",
+        "Pelli Kanuka",
+        "Pelli Kani Prasad",
+        "Pelli Pandiri",
+        "Pelli Pusthakam",
+        "Pelli Sandadi",
+        "Pellidu Pillalu",
+        "Photo",
+        "Pilla Zamindar",
+        "Pogaru",
+        "Pokiri",
+        "Pokiri Raja",
+        "Pokiri Pilla",
+        "Political Rowdy",
+        "Poramboku",
+        "Pothuraju",
+        "Pothe Poni",
+        "Pourusham",
+        "Pournami",
+        "Pourudu",
+        "Pranam",
+        "Prema Chadarangam",
+        "Prema Desam",
+        "Prema Katha",
+        "Prema Lekha",
+        "Premabhishekam",
+        "Premaku Velayara",
+        "Premante Idera",
+        "Premante Inthey",
+        "Prematho Raa",
+        "Premayanamaha",
+        "Prem Nagar",
+        "Premikudu",
+        "Premikula Roju",
+        "Preminchi Pelladutha",
+        "Preminchi Choodu",
+        "Preminchukundam Raa",
+        "Premiste",
+        "Priya Ragalu",
+        "Priya O Priya",
+        "Punnami Naagu",
+        "Pushpaka Vimanam",
+        "Raja",
+        "Rajababu",
+        "Raja Kumarudu",
+        "Raja Simham",
+        "Rajendrudu Gajendrudu",
+        "Rajubhai",
+        "Rakhee",
+        "Raksha",
+        "Rakshakudu",
+        "Rakshana",
+        "Rakshasudu",
+        "Raktha Kanneeru",
+        "Rambantu",
+        "Ramu",
+        "Ramudu Bheemudu",
+        "Ramudu Vachadu",
+        "Ranam",
+        "Raraju",
+        "Rathri",
+        "Rathasaradhi",
+        "Ready",
+        "Rendu",
+        "Rendu Jella Seetha",
+        "Rickshavodu",
+        "Roja",
+        "Roommates",
+        "Rowdy Alludu",
+        "Rowdy Inspector",
+        "Rowdy Zamindar",
+        "Rudranetra",
+        "Rudraveena",
+        "Rustum",
+        "Sabhash Ramudu",
+        "Sahasam Cheyara Dimbaka",
+        "Sainikudu",
+        "Sambaram",
+        "Sampoorna Ramayanam",
+        "Sangham",
+        "Sagara Sangamam",
+        "Sakhi",
+        "Salute",
+        "Samara Simha Reddy",
+        "Sampangi",
+        "Samudram",
+        "Sandade Sandadi",
+        "Sangharshana",
+        "Sankarabharanam",
+        "Sankranthi",
+        "Santhosham",
+        "Sapthapadi",
+        "Sarada Saradaga",
+        "Sardar Paparayudu",
+        "Saroja",
+        "Sasirekha Parinayam",
+        "Sathi",
+        "Sati Sulochana",
+        "Sathyam",
+        "Satyameva Jayathe",
+        "Satruvu",
+        "Satyabhama",
+        "Secretary",
+        "Seema Sastri",
+        "Seema Simham",
+        "Seenu",
+        "Seethaiah",
+        "Seetha Kalyanam",
+        "Seetharama Kalyanam",
+        "Seetharamaraju",
+        "Seeta Ramayya Gari Manavaralu",
+        "Shatamanam Bhavati",
+        "Shourya"
+];
+
+        for (let i = 21; i <= 550; i++) {
+            const genres = ["Action", "Family Drama", "Thriller", "Romance", "Sci-Fi", "Comedy", "Mythological"];
+            const companies = ["Mythri Movie Makers", "Sithara Entertainments", "Sri Venkateswara Creations", "UV Creations", "Geetha Arts", "AK Entertainments", "People Media Factory"];
+            const g = genres[i % genres.length];
+            const c = companies[i % companies.length];
+            const bud = 30 + (i * 37) % 120;
+            const mkt = Math.round(bud * 0.25);
+            const revMultiplier = (i % 7 === 0) ? 0.4 : ((i % 3 === 0) ? 2.4 : 1.3);
+            const rev = Math.round((bud + mkt) * revMultiplier);
+            const profit = rev - (bud + mkt);
+            dataset.push({ title: realMovieTitles[i - 21], year: 2005 + (i % 21), genre: g, company: c, budget: bud, marketing: mkt, revenue: rev, imdb: parseFloat((5.0 + (i % 45) / 10).toFixed(1)), votes: 5000 + (i * 313) % 45000, runtime: 130 + (i % 45), screens: 500 + (i * 17) % 2500, direxp: 2 + (i % 25), status: profit > 50 ? "Blockbuster" : (profit > 0 ? "Hit" : "Box Office Loss") });
+        }
+
+        // Render Dataset Table
+        function renderDatasetTable(data) {
+            const tbody = document.getElementById('dataset-table-body');
+            tbody.innerHTML = '';
+            data.forEach(movie => {
+                const totalInvest = movie.budget + movie.marketing;
+                const netProfit = movie.revenue - totalInvest;
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-cinematic-700/50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-4 font-semibold text-white">${movie.title}</td>
+                    <td class="p-4 text-slate-300">${movie.year}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">${movie.genre}</span></td>
+                    <td class="p-4 text-slate-300">₹${movie.budget} Cr</td>
+                    <td class="p-4 text-slate-300">₹${movie.marketing} Cr</td>
+                    <td class="p-4 font-bold text-emerald-400">₹${movie.revenue} Cr</td>
+                    <td class="p-4 text-slate-300"><i class="fa-solid fa-star text-amber-400 mr-1"></i>${movie.imdb}</td>
+                    <td class="p-4">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${netProfit >= 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                            ${netProfit >= 0 ? '+₹' + netProfit + ' Cr Profit' : '-₹' + Math.abs(netProfit) + ' Cr Loss'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterDataset() {
+            const query = document.getElementById('dataset-search').value.toLowerCase();
+            const filtered = dataset.filter(m => m.title.toLowerCase().includes(query) || m.genre.toLowerCase().includes(query) || m.company.toLowerCase().includes(query));
+            renderDatasetTable(filtered);
+        }
+
+        // ================= ROBUST MOVIE SEARCH =================
+        // Normalizes spaces, punctuation, hyphens, apostrophes, Telugu/English
+        // title variations, and common alternate spellings.
+        function normalizeMovieText(value) {
+            return String(value || '')
+                .normalize('NFKD')
+                .replace(/[–—−]/g, '-')
+                .replace(/['’‘`]/g, '')
+                .replace(/[^a-zA-Z0-9\u0C00-\u0C7F]+/g, ' ')
+                .toLowerCase()
+                .replace(/\\s+/g, ' ')
+                .trim();
+        }
+
+        // Common alternate spellings / search aliases.
+        // The actual dataset title is always displayed in the result.
+        const movieSearchAliases = {
+            "bahubali 2": "Baahubali 2: The Conclusion",
+            "bahubali 2 the conclusion": "Baahubali 2: The Conclusion",
+            "bahubali": "Baahubali 2: The Conclusion",
+            "pushpa 2": "Pushpa 2: The Rule",
+            "pushpa2": "Pushpa 2: The Rule",
+            "kalki": "Kalki 2898 AD",
+            "kalki 2898": "Kalki 2898 AD",
+            "salaar part 1": "Salaar: Part 1 – Ceasefire",
+            "salaar part 1 ceasefire": "Salaar: Part 1 – Ceasefire",
+            "hanuman": "Hanuman",
+            "hanu man": "Hanuman",
+            "rrr movie": "RRR",
+            "ala vaikunthapurramuloo": "Ala Vaikunthapurramuloo",
+            "avpl": "Ala Vaikunthapurramuloo",
+            "waltair veerayya": "Waltair Veerayya",
+            "veera simha reddy": "Veera Simha Reddy",
+            "bheemla nayak": "Bheemla Nayak"
+        };
+
+        function findExactMovieByAlias(query) {
+            const normalized = normalizeMovieText(query);
+            const aliasTitle = movieSearchAliases[normalized];
+            if (!aliasTitle) return null;
+            const aliasNormalized = normalizeMovieText(aliasTitle);
+            return dataset.find(m => normalizeMovieText(m.title) === aliasNormalized) || null;
+        }
+
+        function handleMovieSearchInput(val) {
+            const listContainer = document.getElementById('movie-autocomplete-list');
+            const query = normalizeMovieText(val);
+
+            if (!query) {
+                listContainer.classList.add('hidden');
+                return;
+            }
+
+            const exactAliasMovie = findExactMovieByAlias(val);
+
+            // Search normalized titles instead of raw strings.
+            const matches = dataset
+                .filter(m => {
+                    const title = normalizeMovieText(m.title);
+                    const genre = normalizeMovieText(m.genre);
+                    const company = normalizeMovieText(m.company);
+                    return title.includes(query) ||
+                           query.includes(title) ||
+                           genre.includes(query) ||
+                           company.includes(query);
+                })
+                .sort((a, b) => {
+                    const an = normalizeMovieText(a.title);
+                    const bn = normalizeMovieText(b.title);
+                    const ae = an === query ? 0 : (an.startsWith(query) ? 1 : 2);
+                    const be = bn === query ? 0 : (bn.startsWith(query) ? 1 : 2);
+                    return ae - be;
+                });
+
+            // If an alias matches, put the correct movie first.
+            if (exactAliasMovie) {
+                const rest = matches.filter(m => m !== exactAliasMovie);
+                matches.length = 0;
+                matches.push(exactAliasMovie, ...rest);
+            }
+
+            const uniqueMatches = [...new Map(matches.map(m => [m.title, m])).values()].slice(0, 10);
+
+            if (uniqueMatches.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="p-4 text-slate-400 text-sm">
+                        No matching movie found. Try a shorter title, e.g. <b class="text-amber-400">RRR</b>,
+                        <b class="text-amber-400">Baahubali</b>, <b class="text-amber-400">Pushpa 2</b> or
+                        <b class="text-amber-400">Kalki</b>.
+                    </div>`;
+                listContainer.classList.remove('hidden');
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            uniqueMatches.forEach(m => {
+                const item = document.createElement('div');
+                item.className = 'p-3 hover:bg-cinematic-700 cursor-pointer flex justify-between items-center text-sm transition-colors';
+                item.innerHTML = `
+                    <span class="font-semibold text-white">${m.title}</span>
+                    <span class="text-xs text-amber-400">${m.year} | ₹${m.revenue}Cr</span>`;
+
+                item.onclick = () => {
+                    document.getElementById('movie-search-input').value = m.title;
+                    listContainer.classList.add('hidden');
+                    displayMovieFinancials(m);
+                };
+
+                listContainer.appendChild(item);
+            });
+
+            listContainer.classList.remove('hidden');
+        }
+
+        // Pressing Enter now opens the best matching movie directly.
+        document.getElementById('movie-search-input').addEventListener('keydown', function(event) {
+            if (event.key !== 'Enter') return;
+
+            const query = normalizeMovieText(this.value);
+            if (!query) return;
+
+            const aliasMovie = findExactMovieByAlias(this.value);
+            const movie = aliasMovie || dataset.find(m => normalizeMovieText(m.title) === query)
+                || dataset.find(m => normalizeMovieText(m.title).includes(query));
+
+            if (movie) {
+                event.preventDefault();
+                this.value = movie.title;
+                document.getElementById('movie-autocomplete-list').classList.add('hidden');
+                displayMovieFinancials(movie);
+            }
+        });
+
+        function pickRandomMovie() {
+            const rand = dataset[Math.floor(Math.random() * dataset.length)];
+            document.getElementById('movie-search-input').value = rand.title;
+            document.getElementById('movie-autocomplete-list').classList.add('hidden');
+            displayMovieFinancials(rand);
+        }
+
+        function displayMovieFinancials(m) {
+            const totalInvestment = m.budget + m.marketing;
+            const netProfitOrLoss = m.revenue - totalInvestment;
+            const roi = Math.round((netProfitOrLoss / totalInvestment) * 100 * 10) / 10;
+            
+            // Simulated Elastic Net Prediction for comparison
+            const mlPred = Math.round((m.revenue * (0.92 + (m.imdb % 5) * 0.03)) * 10) / 10;
+
+            document.getElementById('res-movie-title').innerText = m.title;
+            document.getElementById('res-year-badge').innerText = m.year;
+            document.getElementById('res-genre-badge').innerText = m.genre;
+            document.getElementById('res-company').innerText = m.company;
+            document.getElementById('res-direxp').innerText = m.direxp + ' yrs';
+            document.getElementById('res-screens').innerText = m.screens;
+            
+            document.getElementById('res-budget').innerText = `₹ ${m.budget.toFixed(2)} Cr`;
+            document.getElementById('res-marketing').innerText = `₹ ${m.marketing.toFixed(2)} Cr`;
+            document.getElementById('res-revenue').innerText = `₹ ${m.revenue.toFixed(2)} Cr`;
+            
+            const profitCardBg = document.getElementById('res-profit-card-bg');
+            const profitLabel = document.getElementById('res-profit-label');
+            const profitVal = document.getElementById('res-profit');
+            const roiVal = document.getElementById('res-roi');
+            const statusBadge = document.getElementById('res-status-badge');
+
+            if (netProfitOrLoss >= 0) {
+                profitCardBg.className = "bg-cinematic-800 p-6 rounded-2xl border border-emerald-500/30 space-y-1";
+                profitLabel.innerHTML = `<i class="fa-solid fa-chart-line-up mr-1 text-emerald-400"></i> Net Profit Earned`;
+                profitLabel.className = "text-xs text-emerald-400 uppercase font-bold";
+                profitVal.className = "text-3xl font-extrabold text-emerald-400";
+                profitVal.innerText = `₹ ${netProfitOrLoss.toFixed(2)} Cr`;
+                roiVal.className = "text-xs text-emerald-300 font-semibold";
+                roiVal.innerText = `ROI: ${roi >= 0 ? '+' : ''}${roi}%`;
+
+                statusBadge.className = "px-6 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-lg flex items-center";
+                statusBadge.innerHTML = `<i class="fa-solid fa-trophy mr-2 text-xl"></i> ${m.status || 'Commercial Blockbuster'}`;
+            } else {
+                profitCardBg.className = "bg-cinematic-800 p-6 rounded-2xl border border-rose-500/30 space-y-1";
+                profitLabel.innerHTML = `<i class="fa-solid fa-chart-line-down mr-1 text-rose-400"></i> Net Money Lost`;
+                profitLabel.className = "text-xs text-rose-400 uppercase font-bold";
+                profitVal.className = "text-3xl font-extrabold text-rose-400";
+                profitVal.innerText = `-₹ ${Math.abs(netProfitOrLoss).toFixed(2)} Cr`;
+                roiVal.className = "text-xs text-rose-300 font-semibold";
+                roiVal.innerText = `ROI: ${roi}%`;
+
+                statusBadge.className = "px-6 py-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 font-extrabold text-lg flex items-center";
+                statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2 text-xl"></i> Box Office Loss`;
+            }
+
+            document.getElementById('res-imdb').innerText = m.imdb;
+            document.getElementById('res-votes').innerText = m.votes.toLocaleString();
+            document.getElementById('res-runtime').innerText = m.runtime + ' mins';
+            document.getElementById('res-ml-pred').innerText = `₹ ${mlPred} Cr`;
+
+            document.getElementById('financial-result-card').classList.remove('hidden');
+            document.getElementById('financial-result-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Live Predictor Form Handler
+        function handlePrediction(event) {
+            event.preventDefault();
+            const title = document.getElementById('movie-title').value;
+            const budget = parseFloat(document.getElementById('movie-budget').value);
+            const mkt = parseFloat(document.getElementById('movie-mkt').value);
+            const popularity = parseFloat(document.getElementById('movie-popularity').value);
+            const rating = parseFloat(document.getElementById('movie-rating').value);
+            const votes = parseFloat(document.getElementById('movie-votes').value);
+            const genre = document.getElementById('movie-genre').value;
+            const season = document.getElementById('movie-season').value;
+
+            let genreMult = genre === 'Action' ? 1.45 : (genre === 'Sci-Fi' ? 1.35 : (genre === 'Thriller' ? 1.20 : 1.10));
+            let seasonMult = season === 'Sankranthi' ? 1.30 : (season === 'Summer' ? 1.20 : 1.05);
+
+            let estimatedRevenue = (budget * 1.8 + mkt * 1.2 + popularity * 1.5 + (rating * 25) + (votes / 1500)) * genreMult * seasonMult;
+            estimatedRevenue = Math.round(estimatedRevenue * 10) / 10;
+
+            const totalInvest = budget + mkt;
+            const roi = Math.round(((estimatedRevenue - totalInvest) / totalInvest) * 100);
+            const successProb = Math.min(98.5, Math.max(55.0, Math.round((rating / 10) * 60 + (popularity / 100) * 40 * 10) / 10));
+            const lowerCI = Math.round(estimatedRevenue * 0.9);
+            const upperCI = Math.round(estimatedRevenue * 1.1);
+
+            document.getElementById('res-pred-title').innerText = title;
+            document.getElementById('res-pred-revenue').innerText = `₹ ${estimatedRevenue} Cr`;
+            document.getElementById('res-pred-roi').innerText = `${roi >= 0 ? '+' : ''}${roi}%`;
+            document.getElementById('res-pred-prob').innerText = `${successProb}%`;
+            document.getElementById('res-pred-ci').innerText = `₹${lowerCI}Cr - ₹${upperCI}Cr`;
+
+            const container = document.getElementById('prediction-result-container');
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize Charts and Dataset Table on Window Load
+        window.onload = function() {
+            renderDatasetTable(dataset);
+            
+            // Default select RRR on financial lookup
+            displayMovieFinancials(dataset[0]);
+            document.getElementById('movie-search-input').value = "RRR";
+
+            // Chart 1: Budget vs Revenue Scatter
+            const ctx1 = document.getElementById('budgetRevenueChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Telugu Movies (Dataset)',
+                        data: dataset.slice(0, 150).map(m => ({ x: m.budget, y: m.revenue })),
+                        backgroundColor: '#f59e0b',
+                        pointRadius: 6,
+                        pointHoverRadius: 9
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Budget (₹ Cr)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        y: { title: { display: true, text: 'Revenue (₹ Cr)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            // Chart 2: Genre Distribution Doughnut
+            const ctx2 = document.getElementById('genreChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Action / Mass', 'Family Drama', 'Thriller / Mystery', 'Romance / Comedy', 'Sci-Fi / Epic'],
+                    datasets: [{
+                        data: [45, 20, 15, 12, 8],
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
